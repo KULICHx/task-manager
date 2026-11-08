@@ -14,10 +14,8 @@ public class UrgentTaskStrategy implements TaskTypeStrategy {
 
     @Override
     public void apply(Task task) {
-        task.setCompleted(false);
-
         if (task.getDescription() == null || task.getDescription().isBlank()) {
-            task.setDescription("Срочная задача. Требует приоритетного выполнения.");
+            task.setDescription("Urgent task requires priority attention.");
         }
     }
 }

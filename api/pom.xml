@@ -49,19 +49,12 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.8.11</version>
+            <version>3.0.3</version>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-docker-compose</artifactId>
-            <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
 
@@ -74,8 +67,7 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
-            <version>5.0.1</version>
-            <scope>compile</scope>
+
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -115,22 +107,18 @@
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
-            <version>1.17.0</version>
-            <scope>compile</scope>
+
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>4.1.0</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
             <version>9.0</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

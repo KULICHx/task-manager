@@ -27,22 +27,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Testcontainers
 class TaskControllerIntegrationTest {
 
-    // Поднимает настоящий Postgres в Docker специально под этот тестовый прогон
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16")
             .withDatabaseName("task_manager_test")
             .withUsername("test")
             .withPassword("test");
 
-    // Подменяет настройки из application.properties на адрес контейнера-Postgres,
-    // который Testcontainers поднимает на случайном порту
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
-        // отключаем Redis-кеш на время интеграционного теста — Redis тут не поднят
         registry.add("app.cache.redis.enabled", () -> "false");
+        registry.add("app.kafka.events.enabled", () -> "false");
     }
 
     @Autowired
@@ -53,7 +50,6 @@ class TaskControllerIntegrationTest {
 
     @Test
     void shouldCreateUserCategoryAndTask_ThenFetchTaskBack() throws Exception {
-        // 1. создаём юзера через реальный HTTP-запрос
         var userRequest = new UserRequest("Integration User", "integration@test.com");
         var userResult = mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -64,7 +60,6 @@ class TaskControllerIntegrationTest {
         Long userId = objectMapper.readTree(userResult.getResponse().getContentAsString())
                 .get("id").asLong();
 
-        // 2. создаём категорию
         var categoryRequest = new CategoryRequest("Integration Category");
         var categoryResult = mockMvc.perform(post("/api/categories")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -75,7 +70,6 @@ class TaskControllerIntegrationTest {
         Long categoryId = objectMapper.readTree(categoryResult.getResponse().getContentAsString())
                 .get("id").asLong();
 
-        // 3. создаём задачу, ссылаясь на реально созданных юзера и категорию
         var taskRequest = new TaskRequest(
                 "Integration task",
                 "created via integration test",
@@ -95,7 +89,6 @@ class TaskControllerIntegrationTest {
         Long taskId = objectMapper.readTree(taskResult.getResponse().getContentAsString())
                 .get("id").asLong();
 
-        // 4. читаем задачу обратно через GET — проверяем, что она реально сохранилась в БД
         mockMvc.perform(get("/api/tasks/" + taskId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Integration task"))
@@ -111,7 +104,6 @@ class TaskControllerIntegrationTest {
 
     @Test
     void shouldReturnBadRequest_WhenTaskRequestIsInvalid() throws Exception {
-        // title помечен @NotBlank в TaskRequest — пустая строка должна упасть на валидации
         var invalidRequest = new TaskRequest(
                 "",
                 "desc",

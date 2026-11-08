@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -80,8 +81,8 @@ public class TaskController {
 
     @GetMapping("/filter/date")
     public List<TaskResponse> getByDate(
-            @RequestParam LocalDateTime from,
-            @RequestParam LocalDateTime to
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to
     ) {
         return taskService.getByCreatedAtBetween(from, to);
     }
@@ -89,8 +90,8 @@ public class TaskController {
     @GetMapping("/filter")
     public List<TaskResponse> getByStatusAndDate(
             @RequestParam boolean completed,
-            @RequestParam LocalDateTime from,
-            @RequestParam LocalDateTime to
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to
     ) {
         return taskService.getByCompletedAndCreatedAtBetween(completed, from, to);
     }

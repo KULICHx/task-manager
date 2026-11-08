@@ -72,8 +72,6 @@ public class TaskService {
 
         taskEventProducer.sendTaskCreatedEvent(saved);
 
-        log.info("Kafka event TASK_CREATED sent: taskId={}", saved.getId());
-
         return TaskMapper.toResponse(saved);
     }
 
@@ -105,8 +103,6 @@ public class TaskService {
 
         taskEventProducer.sendTaskUpdatedEvent(updated);
 
-        log.info("Kafka event TASK_UPDATED sent: taskId={}", updated.getId());
-
         return TaskMapper.toResponse(updated);
     }
 
@@ -114,7 +110,9 @@ public class TaskService {
     @CacheEvict(value = "tasks", key = "#id")
     public void delete(Long id) {
         log.warn("Delete task id={}", id);
-        taskRepository.delete(findEntity(id));
+        Task task = findEntity(id);
+        taskRepository.delete(task);
+        taskEventProducer.sendTaskDeletedEvent(task);
     }
 
     @Transactional(readOnly = true)

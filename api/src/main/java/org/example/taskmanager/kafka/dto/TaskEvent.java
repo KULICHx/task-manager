@@ -1,8 +1,10 @@
 package org.example.taskmanager.kafka.dto;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record TaskEvent(
+        UUID eventId,
         String eventType,
         Long taskId,
         String title,
@@ -11,5 +13,4 @@ public record TaskEvent(
         Long userId,
         Long categoryId,
         LocalDateTime occurredAt
-) {
-}
+) {}

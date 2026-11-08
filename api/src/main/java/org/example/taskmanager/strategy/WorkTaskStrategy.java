@@ -15,7 +15,7 @@ public class WorkTaskStrategy implements TaskTypeStrategy {
     @Override
     public void apply(Task task) {
         if (task.getDescription() == null || task.getDescription().isBlank()) {
-            task.setDescription("Рабочая задача без подробного описания.");
+            task.setDescription("Work task without additional description.");
         }
     }
 }
