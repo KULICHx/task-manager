@@ -1,16 +1,13 @@
 package org.example.taskmanager.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.taskmanager.dto.task.TaskRequest;
 import org.example.taskmanager.dto.task.TaskResponse;
-import org.example.taskmanager.entity.Category;
 import org.example.taskmanager.entity.Task;
 import org.example.taskmanager.entity.TaskType;
-import org.example.taskmanager.entity.User;
 import org.example.taskmanager.exception.ResourceNotFoundException;
 import org.example.taskmanager.kafka.producer.TaskEventProducer;
 import org.example.taskmanager.mapper.TaskMapper;
@@ -19,10 +16,10 @@ import org.example.taskmanager.strategy.TaskTypeStrategyContext;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
