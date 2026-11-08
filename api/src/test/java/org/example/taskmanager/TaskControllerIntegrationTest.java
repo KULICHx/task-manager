@@ -96,6 +96,48 @@ class TaskControllerIntegrationTest {
     }
 
     @Test
+    void shouldReturnBadRequestWithError_WhenTaskTypeQueryIsInvalid() throws Exception {
+        mockMvc.perform(get("/api/tasks/by-type").param("type", "UNKNOWN"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Invalid request parameter: type"));
+    }
+
+    @Test
+    void shouldReturnBadRequestWithError_WhenRequiredQueryParameterIsMissing() throws Exception {
+        mockMvc.perform(get("/api/tasks/by-type"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Missing request parameter: type"));
+    }
+
+    @Test
+    void shouldReturnBadRequestWithError_WhenJsonBodyIsInvalid() throws Exception {
+        mockMvc.perform(post("/api/tasks")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"title":"Example","completed":false,"userId":1,"categoryId":1,"type":"UNKNOWN"}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Malformed JSON request or invalid field value"));
+    }
+
+    @Test
+    void shouldReturnConflict_WhenCategoryNameAlreadyExists() throws Exception {
+        var request = new CategoryRequest("Unique category for conflict test");
+        String body = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(post("/api/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").exists());
+    }
+
+    @Test
     void shouldReturnNotFound_WhenTaskDoesNotExist() throws Exception {
         mockMvc.perform(get("/api/tasks/999999"))
                 .andExpect(status().isNotFound())
