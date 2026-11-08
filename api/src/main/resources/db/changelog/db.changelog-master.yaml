@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/sql/001-create-users.sql
+  - include:
+      file: db/changelog/sql/002-create-categories.sql
+  - include:
+      file: db/changelog/sql/003-create-tasks.sql
+  - include:
+      file: db/changelog/changes/004-add-created-at-to-tasks.yaml
