@@ -1,0 +1,30 @@
+# Maven
+**/target/
+**/build/
+**/.flattened-pom.xml
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.vscode/
+
+# Secrets and local overrides
+.env
+.env.*
+!.env.example
+**/application-local.properties
+**/application-local.yml
+**/application-local.yaml
+*.pem
+*.key
+
+# OS and logs
+.DS_Store
+Thumbs.db
+*.log
+logs/
