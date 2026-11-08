@@ -66,11 +66,36 @@ task_id=$(curl --fail-with-body --silent --show-error -X POST http://localhost:8
   -H 'Content-Type: application/json' \
   -d "{\"title\":\"Initial task\",\"description\":\"E2E smoke test\",\"completed\":false,\"userId\":$user_id,\"categoryId\":$category_id,\"type\":\"WORK\"}" | jq -er '.id')
 
-curl --fail-with-body --silent --show-error "http://localhost:8081/api/tasks/$task_id" | jq -e '.title == "Initial task"' >/dev/null
+echo "Priming Redis cache with initial task..." 
+curl --fail-with-body --silent --show-error "http://localhost:8081/api/tasks/$task_id" |
+  jq -e '.title == "Initial task" and .userName == "CI Smoke Test" and .categoryName == "CI Smoke Category"' >/dev/null
 curl --fail-with-body --silent --show-error -X PUT "http://localhost:8081/api/tasks/$task_id" \
   -H 'Content-Type: application/json' \
   -d "{\"title\":\"Updated task\",\"description\":\"E2E smoke test\",\"completed\":true,\"userId\":$user_id,\"categoryId\":$category_id,\"type\":\"WORK\"}" | jq -e '.title == "Updated task" and .completed == true' >/dev/null
+
+echo "Checking cached task after update..."
+curl --fail-with-body --silent --show-error "http://localhost:8081/api/tasks/$task_id" |
+  jq -e '.title == "Updated task" and .completed == true' >/dev/null
+
+echo "Checking invalidation when user or category changes..."
+curl --fail-with-body --silent --show-error -X PUT "http://localhost:8081/api/users/$user_id" \
+  -H 'Content-Type: application/json' \
+  -d "{\"name\":\"Renamed Smoke User\",\"email\":\"$email\"}" | jq -e '.name == "Renamed Smoke User"' >/dev/null
+curl --fail-with-body --silent --show-error "http://localhost:8081/api/tasks/$task_id" |
+  jq -e '.userName == "Renamed Smoke User"' >/dev/null
+
+curl --fail-with-body --silent --show-error -X PUT "http://localhost:8081/api/categories/$category_id" \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Renamed Smoke Category"}' | jq -e '.name == "Renamed Smoke Category"' >/dev/null
+curl --fail-with-body --silent --show-error "http://localhost:8081/api/tasks/$task_id" |
+  jq -e '.categoryName == "Renamed Smoke Category" and .userName == "Renamed Smoke User"' >/dev/null
+
 curl --fail-with-body --silent --show-error -X DELETE "http://localhost:8081/api/tasks/$task_id" >/dev/null
+status=$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' "http://localhost:8081/api/tasks/$task_id")
+if [[ "$status" != "404" ]]; then
+  echo "Deleted task must return 404, got $status"
+  exit 1
+fi
 
 echo "Waiting for created/updated/deleted events to reach audit PostgreSQL..."
 verified=0

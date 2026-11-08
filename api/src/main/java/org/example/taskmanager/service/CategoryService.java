@@ -7,6 +7,7 @@ import org.example.taskmanager.exception.ResourceNotFoundException;
 import org.example.taskmanager.mapper.CategoryMapper;
 import org.example.taskmanager.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ public class CategoryService {
     }
 
     @Transactional
+    @CacheEvict(value = "tasks", allEntries = true)
     public CategoryResponse update(Long id, CategoryRequest request) {
         var category = findEntity(id);
         category.setName(request.name());
@@ -44,6 +46,7 @@ public class CategoryService {
     }
 
     @Transactional
+    @CacheEvict(value = "tasks", allEntries = true)
     public void delete(Long id) {
         categoryRepository.delete(findEntity(id));
     }

@@ -7,6 +7,7 @@ import org.example.taskmanager.exception.ResourceNotFoundException;
 import org.example.taskmanager.mapper.UserMapper;
 import org.example.taskmanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,7 @@ public class UserService {
     }
 
     @Transactional
+    @CacheEvict(value = "tasks", allEntries = true)
     public UserResponse update(Long id, UserRequest request) {
         User user = findEntity(id);
         user.setName(request.name());
@@ -46,6 +48,7 @@ public class UserService {
     }
 
     @Transactional
+    @CacheEvict(value = "tasks", allEntries = true)
     public void delete(Long id) {
         userRepository.delete(findEntity(id));
     }
