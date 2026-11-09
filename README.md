@@ -126,9 +126,9 @@ cd consumer
 .\mvnw.cmd clean test
 ```
 
-При запуске интеграционных тестов API нужен работающий Docker Engine для Testcontainers.
+Для интеграционных тестов API и Consumer нужен работающий Docker Engine: оба сервиса используют PostgreSQL Testcontainers.
 
-**Проверено:** 33 теста API и 1 тест consumer прошли в [GitHub Actions](https://github.com/KULICHx/task-manager/actions/workflows/ci.yml). Отдельный [full-stack smoke test](https://github.com/KULICHx/task-manager/actions/workflows/smoke.yml) поднимает инфраструктуру, проверяет REST CRUD, события Kafka, запись аудита и актуализацию Redis-кэша. Базовый сценарий API → Kafka → Consumer → PostgreSQL также успешно воспроизведён вручную на Windows 8 ноября 2026 года (до последующих улучшений Redis и ошибок API).
+**Проверено:** 35 тестов API и 4 теста Consumer прошли в [GitHub Actions](https://github.com/KULICHx/task-manager/actions/workflows/ci.yml). Отдельный [full-stack smoke test](https://github.com/KULICHx/task-manager/actions/workflows/smoke.yml) поднимает инфраструктуру, проверяет REST CRUD, события Kafka, запись аудита и актуализацию Redis-кэша. Дополнительные интеграционные тесты проверяют отсутствие дублирования событий при повторной обработке, ошибки записи и публикацию Kafka-событий только после успешного коммита БД. Базовый сценарий API → Kafka → Consumer → PostgreSQL также успешно воспроизведён вручную на Windows 8 ноября 2026 года (до последующих улучшений Redis и ошибок API).
 
 ## Ограничения и развитие
 

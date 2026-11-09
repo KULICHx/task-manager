@@ -37,7 +37,7 @@ cd consumer
 .\mvnw.cmd clean test
 ```
 
-Интеграционный тест API использует Testcontainers, поэтому для выполнения тестов должен быть запущен Docker Desktop.
+Интеграционные тесты API и Consumer используют PostgreSQL Testcontainers, поэтому для выполнения тестов должен быть запущен Docker Desktop.
 
 ## 3. Запуск приложений
 
