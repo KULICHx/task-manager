@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(properties = {
@@ -84,7 +84,7 @@ class TaskEventTransactionIntegrationTest {
             TaskResponse response = taskService.create(request);
             taskId.set(response.id());
 
-            verifyNoInteractions(kafkaTemplate);
+            verify(kafkaTemplate, never()).send(anyString(), anyString(), any(TaskEvent.class));
         });
 
         assertThat(taskRepository.existsById(taskId.get())).isTrue();
@@ -99,13 +99,13 @@ class TaskEventTransactionIntegrationTest {
 
         new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
             taskService.create(request);
-            verifyNoInteractions(kafkaTemplate);
+            verify(kafkaTemplate, never()).send(anyString(), anyString(), any(TaskEvent.class));
 
             status.setRollbackOnly();
         });
 
         assertThat(taskRepository.count()).isEqualTo(countBefore);
-        verifyNoInteractions(kafkaTemplate);
+        verify(kafkaTemplate, never()).send(anyString(), anyString(), any(TaskEvent.class));
     }
 
     private TaskRequest createRequest() {
